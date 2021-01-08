@@ -1,4 +1,4 @@
-import { lazyloadOptions } from '..';
+import { lazyloadOptions, loadAllNow } from '..';
 
 lazyloadOptions.lazyloadClass = 'mycustomclass';
 
@@ -21,13 +21,10 @@ beforeAll(() => setup());
 
 describe('setup', () => {
   test('non-visible sources are not loaded', () => {
-    const container = document.getElementById('main');
     const elements = [...document.querySelectorAll('[data-lazy]')];
     const emptySources = elements.every(element => element.getAttribute('src') === '' || element.getAttribute('scrset') === '');
-
-    container.scrollTop = 1500;
-
     expect(emptySources).toBe(true);
+    loadAllNow();
   });
 });
 
@@ -36,69 +33,51 @@ describe('sources are lazy-loaded when visible', () => {
     const imageSrc = document.querySelector('img[data-src]');
     const imageSrcset = document.querySelector('img[data-srcset]');
 
-    setTimeout(() => {
-      expect(imageSrc.src).toBe('https://picsum.photos/seed/picsum/200/300');
-      expect(imageSrc.classList.contains('mycustomclwass')).toBe(true);
-      expect(imageSrcset.src).toBe('https://picsum.photos/seed/picsum/200/300');
-    });
+    expect(imageSrc.src).toBe('https://picsum.photos/seed/picsum/200/300');
+    expect(imageSrcset.src).toBe('https://picsum.photos/seed/picsum/200/300');
+    expect(imageSrc.classList.contains('mycustomclass')).toBe('mycustomclass');
   });
 
   test('videos', () => {
     const video = document.querySelector('video');
-
-    setTimeout(() => {
-      expect(video.src).toBe('https://www.w3schools.com/html/movie.mp4');
-    });
+    expect(video.src).toBe('https://www.w3schools.com/html/movie.mp4');
   });
 
   test('iframes', () => {
     const iframe = document.querySelector('iframe');
-
-    setTimeout(() => {
-      expect(iframe.src).toBe('https://firstandthird.com');
-    });
+    expect(iframe.src).toBe('https://firstandthird.com');
   });
 
   test('audios', () => {
     const audio = document.querySelector('audio');
-
-    setTimeout(() => {
-      expect(audio.src).toBe('https://www.w3schools.com/html/horse.mp3');
-    });
+    expect(audio.src).toBe('https://www.w3schools.com/html/horse.mp3');
   });
 });
+
 describe('sources are lazy-loaded when visible', () => {
   test('images', () => {
     const imageSrc = document.querySelector('img[data-src]');
     const imageSrcset = document.querySelector('img[data-srcset]');
 
-    setTimeout(() => {
-      expect(imageSrc.src).toBe('https://picsum.photos/seed/picsum/200/300');
-      expect(imageSrcset.src).toBe('https://picsum.photos/seed/picsum/200/300');
-    });
+    expect(imageSrc.src).toBe('https://picsum.photos/seed/picsum/200/300');
+    expect(imageSrcset.src).toBe('https://picsum.photos/seed/picsum/200/300');
   });
 
   test('videos', () => {
     const video = document.querySelector('video');
 
-    setTimeout(() => {
-      expect(video.src).toBe('https://www.w3schools.com/html/movie.mp4');
-    });
+    expect(video.src).toBe('https://www.w3schools.com/html/movie.mp4');
   });
 
   test('iframes', () => {
     const iframe = document.querySelector('iframe');
 
-    setTimeout(() => {
-      expect(iframe.src).toBe('https://firstandthird.com');
-    });
+    expect(iframe.src).toBe('https://firstandthird.com');
   });
 
   test('audios', () => {
     const audio = document.querySelector('audio');
 
-    setTimeout(() => {
-      expect(audio.src).toBe('https://www.w3schools.com/html/horse.mp3');
-    });
+    expect(audio.src).toBe('https://www.w3schools.com/html/horse.mp3');
   });
 });
