@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lazyload example</title>
+  <style>
+    section {
+      margin-bottom: 7em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lazyload Example</h1>
+
+  <p>Scroll down.. ⬇</p>
+
+  <div style="height: 1500px;"></div>
+
+  <section>
+    <h2>Lazyload Images</h2>
+
+    <img src="" data-lazy data-src="https://picsum.photos/seed/picsum/200/300" alt="">
+    <img src="" srcset="" data-lazy data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
+  </section>
+
+  <section>
+    <h2>Lazyload Iframes</h2>
+
+    <iframe src="" data-lazy data-src="https://firstandthird.com" title="First+Third Website"></iframe>
+  </section>
+
+  <section>
+    <h2>Lazyload Videos</h2>
+
+    <video src="" data-lazy data-src="https://www.w3schools.com/html/movie.mp4" width="320" height="240" controls></video>
+  </section>
+
+  <section>
+    <h2>Lazyload Audio</h2>
+
+    <audio src="" data-lazy data-src="https://www.w3schools.com/html/horse.mp3" controls></audio>
+  </section>
+
+  <script src="../dist/lazyload.js"></script>
+</body>
+</html>
