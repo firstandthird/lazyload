@@ -1,5 +1,5 @@
 {
-  "name": "lazyload",
+  "name": "@firstandthird/lazyload",
   "version": "1.0.0",
   "description": "Lazyload library",
   "source": "index.js",
@@ -23,7 +23,7 @@
     "performance",
     "optimization"
   ],
-  "author": "First+Third",
+  "author": "First+Third <code@firstandthird.com> (http://firstandthird.com/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/firstandthird/lazyload/issues"
