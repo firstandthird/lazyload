@@ -38,7 +38,7 @@ const setSource = element => {
 };
 
 const loadElements = () => {
-  elements = Array.from(document.querySelectorAll('video[data-lazy], iframe[data-lazy], script[data-lazy]'));
+  elements = Array.from(document.querySelectorAll('audio[data-lazy], video[data-lazy], iframe[data-lazy], script[data-lazy]'));
   images = Array.from(document.querySelectorAll('img[data-lazy]'));
 
   if (lazyloadOptions.nativeLazyloadEnabled) {
