@@ -16,8 +16,8 @@ const lazyloadOptions = {
 
 let lazyObserver = null;
 let resizeListener = null;
-let elements = Array.from(document.querySelectorAll('video[data-lazy], iframe[data-lazy], script[data-lazy]'));
-const images = Array.from(document.querySelectorAll('img[data-lazy]'));
+let elements = [];
+let images = [];
 
 const setSource = element => {
   const { src, srcset, wait } = element.dataset;
@@ -33,6 +33,22 @@ const setSource = element => {
   if (wait) {
     element.onload = () => element.classList.add(lazyloadOptions.lazyloadClass);
   }
+
+  element.removeAttribute('data-lazy');
+};
+
+const loadElements = () => {
+  elements = Array.from(document.querySelectorAll('video[data-lazy], iframe[data-lazy], script[data-lazy]'));
+  images = Array.from(document.querySelectorAll('img[data-lazy]'));
+
+  if (lazyloadOptions.nativeLazyloadEnabled) {
+    images.forEach(image => {
+      image.loading = 'lazy';
+      setSource(image);
+    });
+  } else {
+    elements = elements.concat(images);
+  }
 };
 
 const onIntersect = (entries, observer) => {
@@ -47,8 +63,19 @@ const onIntersect = (entries, observer) => {
   });
 };
 
+const destroyObserver = () => {
+  if (lazyObserver) {
+    lazyObserver.disconnect();
+    lazyObserver = null;
+  }
+};
+
 const initObserver = () => {
+  loadElements();
+
   if ('IntersectionObserver' in window) {
+    destroyObserver();
+
     lazyObserver = new IntersectionObserver(onIntersect, lazyloadOptions.getOptions());
 
     if (elements) {
@@ -58,35 +85,12 @@ const initObserver = () => {
 };
 
 const onResize = () => {
-  if (lazyObserver) {
-    lazyObserver.disconnect();
-  }
-
   lazyloadOptions.rootMargin = `0px 0px ${window.innerHeight / 2}px 0px`;
 
-  lazyObserver = initObserver();
+  initObserver();
 };
 
-if (lazyloadOptions.nativeLazyloadEnabled) {
-  images.forEach(image => {
-    image.loading = 'lazy';
-    setSource(image);
-  });
-} else {
-  elements = elements.concat(images);
-}
-
-initObserver();
-
-if (lazyObserver) {
-  resizeListener = window.addEventListener('resize', onResize);
-}
-
 const loadAllNow = () => {
-  if (lazyObserver) {
-    lazyObserver.disconnect();
-  }
-
   if (resizeListener) {
     removeEventListener(resizeListener);
   }
@@ -100,5 +104,11 @@ const loadAllNow = () => {
 
   elements.forEach(element => setSource(element));
 };
+
+initObserver();
+
+if (lazyObserver) {
+  resizeListener = window.addEventListener('resize', onResize);
+}
 
 export { lazyloadOptions, loadAllNow };
