@@ -9,7 +9,7 @@
   "scripts": {
     "build": "microbundle",
     "dev": "concurrently 'microbundle watch' 'serve'",
-    "test": "jest",
+    "test": "jest --coverage",
     "pretest": "microbundle",
     "prepublishOnly": "npm run lint && npm run test && microbundle",
     "lint": "eslint index.js ./test"
