@@ -95,6 +95,8 @@ const loadAllNow = () => {
     removeEventListener(resizeListener);
   }
 
+  loadElements();
+
   if (lazyloadOptions.nativeLazyloadEnabled) {
     images.forEach(image => {
       image.removeAttribute('loading');

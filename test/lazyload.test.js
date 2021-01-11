@@ -3,9 +3,7 @@ import { lazyloadOptions, loadAllNow } from '..';
 lazyloadOptions.lazyloadClass = 'mycustomclass';
 
 const setup = () => {
-  const container = document.createElement('div');
-  container.id = 'main';
-  container.innerHTML = `
+  document.body.innerHTML = `
     <div style="height: 1500px;"></div>
     <img src="" srcset="" data-lazy data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
     <img src="" data-lazy data-wait data-src="https://picsum.photos/seed/picsum/200/300" alt="">
@@ -14,17 +12,16 @@ const setup = () => {
     <audio src="" data-lazy data-src="https://www.w3schools.com/html/horse.mp3"></audio>
   `;
 
-  document.body.appendChild(container);
+  loadAllNow();
 };
 
-beforeAll(() => setup());
+beforeEach(() => setup());
 
 describe('setup', () => {
   test('non-visible sources are not loaded', () => {
     const elements = [...document.querySelectorAll('[data-lazy]')];
     const emptySources = elements.every(element => element.getAttribute('src') === '' || element.getAttribute('scrset') === '');
     expect(emptySources).toBe(true);
-    loadAllNow();
   });
 });
 
