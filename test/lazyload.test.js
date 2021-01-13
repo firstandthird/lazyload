@@ -1,6 +1,4 @@
-import { lazyloadOptions, loadAllNow } from '..';
-
-lazyloadOptions.nativeLazyloadEnabled = false;
+import { lazyloadOptions, loadAllNow, init } from '..';
 
 const setup = () => {
   document.body.innerHTML = `
@@ -11,15 +9,16 @@ const setup = () => {
     <video src="" data-lazy data-src="https://www.w3schools.com/html/movie.mp4" controls></video>
     <audio src="" data-lazy data-src="https://www.w3schools.com/html/horse.mp3"></audio>
   `;
-
-  loadAllNow();
 };
 
-beforeAll(() => setup());
+beforeAll(() => {
+  setup();
+  loadAllNow();
+});
 
 describe('setup', () => {
   test('gets default options', () => {
-    expect(lazyloadOptions.getOptions()).toHaveProperty('root', 'treshold', 'rootMargin');
+    expect(lazyloadOptions.getObserverOptions()).toHaveProperty('root', 'treshold', 'rootMargin');
   });
 
   test('non-visible sources are not loaded', () => {
@@ -56,12 +55,36 @@ describe('sources are lazy-loaded when visible', () => {
 
 describe('native lazy loading property is set', () => {
   beforeAll(() => {
-    lazyloadOptions.nativeLazyloadEnabled = true;
+    lazyloadOptions.forceNativeLazyload = true;
     setup();
+    init();
   });
 
   test('image native lazy-load', () => {
     const imageSrc = document.querySelector('img[data-src]');
     expect(imageSrc.loading).toBe('lazy');
+  });
+});
+
+describe('intersection observer is called', () => {
+  const windowIntersectionObserver = window.IntersectionObserver;
+  const observe = jest.fn();
+
+  beforeAll(() => {
+    window.IntersectionObserver = jest.fn(() => ({
+      observe
+    }));
+
+    lazyloadOptions.forceIntersectionObserver = true;
+    setup();
+    init();
+  });
+
+  afterAll(() => {
+    window.IntersectionObserver = windowIntersectionObserver;
+  });
+
+  test('intersection observer is setup', () => {
+    expect(observe).toHaveBeenCalled();
   });
 });

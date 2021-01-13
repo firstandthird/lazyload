@@ -1,4 +1,5 @@
 const lazyloadOptions = {
+  forceIntersectionObserver: false,
   forceNativeLazyload: false,
   nativeLazyloadEnabled: true,
 
@@ -69,7 +70,7 @@ const init = () => {
     }
   });
 
-  if (observableElements.length && 'IntersectionObserver' in window) {
+  if (lazyloadOptions.forceIntersectionObserver || (observableElements.length && 'IntersectionObserver' in window)) {
     observer = new IntersectionObserver(onIntersect, lazyloadOptions.getObserverOptions());
 
     observableElements.forEach(element => observer.observe(element));
