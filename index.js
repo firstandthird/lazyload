@@ -1,26 +1,19 @@
 const lazyloadOptions = {
-  rootElement: null,
-  rootMargin: `0px 0px ${window.innerHeight / 2}px 0px`,
-  treshold: 1,
-  lazyloadClass: 'loaded',
-  nativeLazyloadEnabled: 'loading' in HTMLImageElement.prototype,
+  forceNativeLazyload: false,
+  nativeLazyloadEnabled: true,
 
-  getOptions() {
-    return {
-      root: this.rootElement,
-      rootMargin: this.rootMargin,
-      threshold: this.treshold
-    };
-  }
+  getObserverOptions: () => ({
+    root: null,
+    rootMargin: `0px 0px ${window.innerHeight / 2}px 0px`,
+    threshold: 1
+  })
 };
 
-let lazyObserver = null;
-let resizeListener = null;
-let elements = [];
-let images = [];
+let observer = null;
+const getElements = (selector = '[data-lazy]') => Array.from(document.querySelectorAll(selector));
 
 const setSource = element => {
-  const { src, srcset, wait } = element.dataset;
+  const { src, srcset } = element.dataset;
 
   if (src) {
     element.src = src;
@@ -30,87 +23,81 @@ const setSource = element => {
     element.srcset = srcset;
   }
 
-  if (wait) {
-    element.onload = () => element.classList.add(lazyloadOptions.lazyloadClass);
-  }
-
   element.removeAttribute('data-lazy');
 };
 
-const loadElements = () => {
-  elements = Array.from(document.querySelectorAll('audio[data-lazy], video[data-lazy], iframe[data-lazy], script[data-lazy]'));
-  images = Array.from(document.querySelectorAll('img[data-lazy]'));
-
-  if (lazyloadOptions.nativeLazyloadEnabled) {
-    images.forEach(image => {
-      image.loading = 'lazy';
-      setSource(image);
-    });
-  } else {
-    elements = elements.concat(images);
-  }
-};
-
-const onIntersect = (entries, observer) => {
+const onIntersect = (entries, entryObserver) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      const { target } = entry;
+      const { src, srcset, wait } = entry.dataset;
 
-      setSource(target);
+      if (wait && entry.tagName === 'IMG') {
+        const image = new Image();
+        entry.onload = () => setSource(entry);
 
-      observer.unobserve(target);
+        if (src) {
+          image.src = src;
+        }
+
+        if (srcset) {
+          image.srcset = srcset;
+        }
+      } else {
+        if (wait && entry.tagName === 'IFRAME') {
+          entry.onload = () => setSource(entry);
+        }
+
+        setSource(entry);
+      }
+
+      entryObserver.unobserve(entry);
     }
   });
 };
 
-const destroyObserver = () => {
-  if (lazyObserver) {
-    lazyObserver.disconnect();
-    lazyObserver = null;
-  }
-};
+const init = () => {
+  const elements = getElements();
+  const observableElements = [];
 
-const initObserver = () => {
-  loadElements();
-
-  if ('IntersectionObserver' in window) {
-    destroyObserver();
-
-    lazyObserver = new IntersectionObserver(onIntersect, lazyloadOptions.getOptions());
-
-    if (elements) {
-      elements.forEach(element => lazyObserver.observe(element));
+  elements.forEach(element => {
+    // element supports native browser lazyloading
+    if (lazyloadOptions.forceNativeLazyload || (lazyloadOptions.nativeLazyloadEnabled && 'loading' in element)) {
+      element.loading = 'lazy';
+      setSource(element);
+    } else {
+      observableElements.push(element);
     }
+  });
+
+  if (observableElements.length && 'IntersectionObserver' in window) {
+    observer = new IntersectionObserver(onIntersect, lazyloadOptions.getObserverOptions());
+
+    observableElements.forEach(element => observer.observe(element));
+
+    // eslint-disable-next-line no-use-before-define
+    window.addEventListener('resize', onResize);
   }
 };
 
 const onResize = () => {
-  lazyloadOptions.rootMargin = `0px 0px ${window.innerHeight / 2}px 0px`;
+  if (observer) {
+    observer.disconnect();
+  }
 
-  initObserver();
+  init();
 };
 
 const loadAllNow = () => {
-  if (resizeListener) {
-    removeEventListener(resizeListener);
-  }
+  const elements = getElements();
 
-  loadElements();
+  window.removeEventListener('resize', onResize);
 
-  if (lazyloadOptions.nativeLazyloadEnabled) {
-    images.forEach(image => {
-      image.removeAttribute('loading');
-      setSource(image);
-    });
-  }
-
-  elements.forEach(element => setSource(element));
+  elements.forEach(element => {
+    element.removeAttribute('loading');
+    setSource(element);
+  });
 };
 
-initObserver();
+init();
 
-if (lazyObserver) {
-  resizeListener = window.addEventListener('resize', onResize);
-}
-
-export { lazyloadOptions, loadAllNow };
+export { lazyloadOptions, loadAllNow, init };
