@@ -52,12 +52,16 @@ describe('setup', () => {
     expect(emptySources).toBe(true);
   });
 
-  test.only('intersection observer is setup', () => {
+  test('intersection observer is setup', () => {
     expect(observe).toHaveBeenCalled();
   });
 });
 
-describe('sources are lazy-loaded when visible', () => {
+describe('sources are lazy-loaded', () => {
+  beforeAll(() => {
+    loadAllNow();
+  });
+
   test('images', () => {
     const imageSrc = document.querySelector('img[data-src]');
     const imageSrcset = document.querySelector('img[data-srcset]');
