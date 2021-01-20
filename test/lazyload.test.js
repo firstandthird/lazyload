@@ -59,7 +59,7 @@ describe('setup', () => {
   });
 
   test('init returns observed elements', () => {
-    expect(observedElements.length).toBe(10);
+    expect(observedElements.length).toBe(5);
   });
 });
 

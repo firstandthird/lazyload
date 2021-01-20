@@ -91,7 +91,7 @@ const init = () => {
     window.addEventListener('resize', onResize);
   }
 
-  return [].concat(elements, observableElements);
+  return observableElements;
 };
 
 const onResize = () => {
