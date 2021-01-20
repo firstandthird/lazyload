@@ -11,6 +11,7 @@ const lazyloadOptions = {
 };
 
 let observer = null;
+let observerCount = 0;
 const getElements = () => Array.prototype.slice.call(document.querySelectorAll('[data-lazy]'));
 
 const setSource = element => {
@@ -27,14 +28,22 @@ const setSource = element => {
   element.removeAttribute('data-lazy');
 };
 
+const desrtoyObserver = () => {
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+  }
+};
+
 const onIntersect = (entries, entryObserver) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      const { src, srcset, wait } = entry.dataset;
+      const target = entry.target;
+      const { src, srcset } = target.dataset;
 
-      if (wait && entry.tagName === 'IMG') {
+      if (target.hasAttribute('data-wait') && target.tagName === 'IMG') {
         const image = new Image();
-        entry.onload = () => setSource(entry);
+        image.onload = () => setSource(target);
 
         if (src) {
           image.src = src;
@@ -44,10 +53,16 @@ const onIntersect = (entries, entryObserver) => {
           image.srcset = srcset;
         }
       } else {
-        setSource(entry);
+        setSource(target);
       }
 
-      entryObserver.unobserve(entry);
+      observerCount -= 1;
+
+      entryObserver.unobserve(target);
+
+      if (observerCount <= 0) {
+        desrtoyObserver();
+      }
     }
   });
 };
@@ -68,6 +83,7 @@ const init = () => {
 
   if (observableElements.length && (lazyloadOptions.forceIntersectionObserver || 'IntersectionObserver' in window)) {
     observer = new IntersectionObserver(onIntersect, lazyloadOptions.getObserverOptions());
+    observerCount = observableElements.length;
 
     observableElements.forEach(element => observer.observe(element));
 
@@ -76,13 +92,6 @@ const init = () => {
   }
 
   return [].concat(elements, observableElements);
-};
-
-const desrtoyObserver = () => {
-  if (observer) {
-    observer.disconnect();
-    observer = null;
-  }
 };
 
 const onResize = () => {
