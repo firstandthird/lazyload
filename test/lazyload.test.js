@@ -1,3 +1,4 @@
+/* eslint-disable compat/compat */
 import { lazyloadOptions, loadAllNow, init } from '..';
 
 let unobserve;
@@ -18,7 +19,7 @@ const setup = () => {
     this.observe = observe;
     this.disconnect = disconnect;
     this.unobserve = unobserve;
-    onIntersect = cb;
+    onIntersect = cb; // eslint-disable-line no-unused-vars
   });
 
   document.body.innerHTML = `
