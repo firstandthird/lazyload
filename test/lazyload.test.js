@@ -5,6 +5,7 @@ let disconnect;
 let observe;
 let onIntersect;
 let windowIntersectionObserver;
+let observedElements = 0;
 
 const setup = () => {
   windowIntersectionObserver = window.IntersectionObserver;
@@ -30,7 +31,7 @@ const setup = () => {
   `;
 
   // Important since init is called automatically before the mock takes place
-  init();
+  observedElements = init();
 };
 
 beforeAll(() => {
@@ -54,6 +55,10 @@ describe('setup', () => {
 
   test('intersection observer is setup', () => {
     expect(observe).toHaveBeenCalled();
+  });
+
+  test('init returns observed elements', () => {
+    expect(observedElements.length).toBe(10);
   });
 });
 
