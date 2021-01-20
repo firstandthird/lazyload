@@ -11,7 +11,7 @@ const lazyloadOptions = {
 };
 
 let observer = null;
-const getElements = (selector = '[data-lazy]') => Array.from(document.querySelectorAll(selector));
+const getElements = () => Array.prototype.slice.call(document.querySelectorAll('[data-lazy]'));
 
 const setSource = element => {
   const { src, srcset } = element.dataset;
@@ -44,10 +44,6 @@ const onIntersect = (entries, entryObserver) => {
           image.srcset = srcset;
         }
       } else {
-        if (wait && entry.tagName === 'IFRAME') {
-          entry.onload = () => setSource(entry);
-        }
-
         setSource(entry);
       }
 
@@ -70,7 +66,7 @@ const init = () => {
     }
   });
 
-  if (lazyloadOptions.forceIntersectionObserver || (observableElements.length && 'IntersectionObserver' in window)) {
+  if (observableElements.length && (lazyloadOptions.forceIntersectionObserver || 'IntersectionObserver' in window)) {
     observer = new IntersectionObserver(onIntersect, lazyloadOptions.getObserverOptions());
 
     observableElements.forEach(element => observer.observe(element));
@@ -78,12 +74,19 @@ const init = () => {
     // eslint-disable-next-line no-use-before-define
     window.addEventListener('resize', onResize);
   }
+
+  return [].concat(elements, observableElements);
+};
+
+const desrtoyObserver = () => {
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+  }
 };
 
 const onResize = () => {
-  if (observer) {
-    observer.disconnect();
-  }
+  desrtoyObserver();
 
   init();
 };
@@ -92,6 +95,8 @@ const loadAllNow = () => {
   const elements = getElements();
 
   window.removeEventListener('resize', onResize);
+
+  desrtoyObserver();
 
   elements.forEach(element => {
     element.removeAttribute('loading');
