@@ -28,7 +28,7 @@ const setSource = element => {
   element.removeAttribute('data-lazy');
 };
 
-const desrtoyObserver = () => {
+const destroyObserver = () => {
   if (observer) {
     observer.disconnect();
     observer = null;
@@ -61,7 +61,7 @@ const onIntersect = (entries, entryObserver) => {
       entryObserver.unobserve(target);
 
       if (observerCount <= 0) {
-        desrtoyObserver();
+        destroyObserver();
       }
     }
   });
@@ -95,7 +95,7 @@ const init = () => {
 };
 
 const onResize = () => {
-  desrtoyObserver();
+  destroyObserver();
 
   init();
 };
@@ -105,7 +105,7 @@ const loadAllNow = () => {
 
   window.removeEventListener('resize', onResize);
 
-  desrtoyObserver();
+  destroyObserver();
 
   elements.forEach(element => {
     element.removeAttribute('loading');
