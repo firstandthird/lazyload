@@ -7,7 +7,7 @@
   <a href="https://github.com/firstandthird/lazyload/actions">
     <img src="https://img.shields.io/github/workflow/status/firstandthird/lazyload/Lint/main?label=Lint&style=for-the-badge" alt="Lint Status"/>
   </a>
-  <img src="https://img.shields.io/npm/v/lazyload.svg?label=npm&style=for-the-badge" alt="NPM" />
+  <img src="https://img.shields.io/npm/v/firstandthird/lazyload.svg?label=npm&style=for-the-badge" alt="NPM" />
 </p>
 
 Lazyload library
@@ -31,10 +31,15 @@ yarn add @firstandthird/lazyload
 ```
 
 ```js
-import { lazyloadOptions, loadAllNow } from '@firstandthird/lazyload';
+import { lazyloadOptions, loadAllNow, init } from '@firstandthird/lazyload';
 
 // Override options
-lazyloadOptions.treshold = 0.2;
+lazyloadOptions.nativeLazyloadEnabled = false; // disables native loading="lazy"
+lazyloadOptions.getOptions = () => ({
+  root: null,
+  rootMargin: `0px 0px 100px 0px`,
+  threshold: [0.2, 0.3, 1]
+});
 
 // Load all sources (ignores lazy loading)
 loadAllNow();
