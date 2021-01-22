@@ -25,13 +25,15 @@ const setup = () => {
     this.observe = observe;
     this.disconnect = disconnect;
     this.unobserve = unobserve;
-    onIntersect = cb; // eslint-disable-line no-unused-vars
+    onIntersect = cb;
   });
 
   document.body.innerHTML = `
     <div style="height: 1500px;"></div>
     <img src="" srcset="" data-lazy data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
     <img src="" data-lazy data-src="https://picsum.photos/seed/picsum/200/300" alt="">
+    <img src="" data-lazy data-wait data-src="https://picsum.photos/seed/picsum/200/300" alt="">
+    <img src="" srcset="" data-lazy data-wait data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
     <iframe src="" data-lazy data-src="https://firstandthird.com/" title="First+Third Website"></iframe>
     <video src="" data-lazy data-src="https://www.w3schools.com/html/movie.mp4" controls></video>
     <audio src="" data-lazy data-src="https://www.w3schools.com/html/horse.mp3"></audio>
@@ -65,7 +67,8 @@ describe('setup', () => {
   });
 
   test('init returns observed elements', () => {
-    expect(observedElements.length).toBe(5);
+    const elements = [...document.querySelectorAll('[data-lazy]')];
+    expect(observedElements.length).toBe(elements.length);
   });
 });
 
@@ -98,11 +101,44 @@ describe('sources are lazy-loaded', () => {
   });
 });
 
+describe('intersection observer works', () => {
+  beforeEach(() => {
+    setup();
+  });
+
+  test('image loads on intersect', () => {
+    const image = document.querySelector('img[data-src]');
+
+    expect(image.src).toBe('http://localhost/');
+
+    onIntersect([{ target: image, isIntersecting: true }], { unobserve });
+
+    expect(unobserve).toHaveBeenCalled();
+    expect(image.src).toBe('https://picsum.photos/seed/picsum/200/300');
+  });
+
+  test('observer is disconnected when all elements are loaded', () => {
+    const elements = [...document.querySelectorAll('[data-lazy]')];
+
+    elements.forEach(element => {
+      onIntersect([{ target: element, isIntersecting: true }], { unobserve });
+    });
+
+    expect(disconnect).toHaveBeenCalled();
+  });
+});
+
 describe('resize', () => {
-  test('observer options are updated', () => {
+  beforeAll(() => {
     window.innerHeight = 200;
     events.resize();
+  });
 
+  test('observer is destroyed', () => {
+    expect(disconnect).toHaveBeenCalled();
+  });
+
+  test('observer options are updated', () => {
     expect(lazyloadOptions.getObserverOptions().rootMargin).toBe('0px 0px 100px 0px');
   });
 });
