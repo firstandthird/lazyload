@@ -7,7 +7,7 @@
   <a href="https://github.com/firstandthird/lazyload/actions">
     <img src="https://img.shields.io/github/workflow/status/firstandthird/lazyload/Lint/main?label=Lint&style=for-the-badge" alt="Lint Status"/>
   </a>
-  <img src="https://img.shields.io/npm/v/firstandthird/lazyload.svg?label=npm&style=for-the-badge" alt="NPM" />
+  <img src="https://img.shields.io/npm/v/@firstandthird/lazyload?style=for-the-badge" alt="NPM" />
 </p>
 
 Lazyload library
@@ -44,6 +44,8 @@ lazyloadOptions.getOptions = () => ({
 // Load all sources (ignores lazy loading)
 loadAllNow();
 ```
+
+See [more examples](./example/index.html).
 
 ---
 
