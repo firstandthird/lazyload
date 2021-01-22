@@ -8,6 +8,12 @@ let onIntersect;
 let windowIntersectionObserver;
 let observedElements = 0;
 
+const events = {};
+
+window.addEventListener = jest.fn((event, cb) => {
+  events[event] = cb;
+});
+
 const setup = () => {
   windowIntersectionObserver = window.IntersectionObserver;
 
@@ -92,15 +98,11 @@ describe('sources are lazy-loaded', () => {
   });
 });
 
-describe('native lazy loading property is set', () => {
-  beforeAll(() => {
-    lazyloadOptions.forceNativeLazyload = true;
-    setup();
-    init();
-  });
+describe('resize', () => {
+  test('observer options are updated', () => {
+    window.innerHeight = 200;
+    events.resize();
 
-  test('image native lazy-load', () => {
-    const imageSrc = document.querySelector('img[data-src]');
-    expect(imageSrc.loading).toBe('lazy');
+    expect(lazyloadOptions.getObserverOptions().rootMargin).toBe('0px 0px 100px 0px');
   });
 });

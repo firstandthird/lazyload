@@ -1,6 +1,4 @@
 const lazyloadOptions = {
-  forceIntersectionObserver: false,
-  forceNativeLazyload: false,
   nativeLazyloadEnabled: true,
 
   getObserverOptions: () => ({
@@ -73,7 +71,7 @@ const init = () => {
 
   elements.forEach(element => {
     // element supports native browser lazyloading
-    if (lazyloadOptions.forceNativeLazyload || (lazyloadOptions.nativeLazyloadEnabled && 'loading' in element)) {
+    if (lazyloadOptions.nativeLazyloadEnabled && 'loading' in element) {
       element.loading = 'lazy';
       setSource(element);
     } else {
@@ -81,7 +79,7 @@ const init = () => {
     }
   });
 
-  if (observableElements.length && (lazyloadOptions.forceIntersectionObserver || 'IntersectionObserver' in window)) {
+  if (observableElements.length && 'IntersectionObserver' in window) {
     observer = new IntersectionObserver(onIntersect, lazyloadOptions.getObserverOptions());
     observerCount = observableElements.length;
 
