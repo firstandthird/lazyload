@@ -4,7 +4,7 @@ const lazyloadOptions = {
   getObserverOptions: () => ({
     root: null,
     rootMargin: `0px 0px ${window.innerHeight / 2}px 0px`,
-    threshold: 1
+    threshold: 0
   })
 };
 
