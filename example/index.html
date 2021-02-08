@@ -15,6 +15,24 @@
 
   <p>Scroll down.. ⬇</p>
 
+  <style>
+    figure {
+      height: 0;
+      overflow: hidden;
+      padding-top: 56%;
+      position: relative;
+    }
+
+    figure img {
+      height: 100%;
+      left: 0;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+  </style>
+
   <div style="height: 1500px;"></div>
 
   <section>
@@ -23,6 +41,10 @@
     <img src="" data-lazy data-src="https://picsum.photos/seed/picsum/200/300" alt="">
     <img src="" srcset="" data-lazy data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
     <img src="" srcset="" data-wait data-lazy data-srcset="https://picsum.photos/seed/picsum/200/300" alt="">
+
+    <figure>
+      <img src="" data-lazy data-src="https://picsum.photos/seed/picsum/200/300" alt="">
+    </figure>
   </section>
 
   <section>
