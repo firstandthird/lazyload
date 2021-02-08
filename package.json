@@ -1,6 +1,6 @@
 {
   "name": "@firstandthird/lazyload",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lazyload library",
   "source": "index.js",
   "main": "dist/lazyload.js",
